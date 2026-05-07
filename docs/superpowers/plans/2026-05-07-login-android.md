@@ -457,8 +457,8 @@ class PhoneUtilsTest {
         assertEquals("1",             PhoneUtils.format("1"))
         assertEquals("138",           PhoneUtils.format("138"))
         assertEquals("138 0",         PhoneUtils.format("1380"))
-        assertEquals("138 0013",      PhoneUtils.format("13800013"))
-        assertEquals("138 0013 8",    PhoneUtils.format("138001380"))
+        assertEquals("138 0013",      PhoneUtils.format("1380013"))
+        assertEquals("138 0013 8",    PhoneUtils.format("13800138"))
         assertEquals("138 0013 8000", PhoneUtils.format("13800138000"))
     }
 

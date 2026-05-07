@@ -340,8 +340,8 @@ private slots:
         QCOMPARE(PhoneUtils::format("1"),             QString("1"));
         QCOMPARE(PhoneUtils::format("138"),           QString("138"));
         QCOMPARE(PhoneUtils::format("1380"),          QString("138 0"));
-        QCOMPARE(PhoneUtils::format("13800013"),      QString("138 0013"));
-        QCOMPARE(PhoneUtils::format("138001380"),     QString("138 0013 8"));
+        QCOMPARE(PhoneUtils::format("1380013"),       QString("138 0013"));
+        QCOMPARE(PhoneUtils::format("13800138"),      QString("138 0013 8"));
         QCOMPARE(PhoneUtils::format("13800138000"),   QString("138 0013 8000"));
     }
 
