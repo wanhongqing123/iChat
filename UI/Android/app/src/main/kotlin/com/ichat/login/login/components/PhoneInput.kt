@@ -30,7 +30,7 @@ fun PhoneInput(
 ) {
     val display = PhoneUtils.format(rawDigits)
     Row(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
             .background(BgSurface, InputShape)
@@ -51,7 +51,7 @@ fun PhoneInput(
                 if (display.isEmpty()) Text("请输入手机号", style = BodyMd.copy(color = TextSecondary))
                 inner()
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
         )
     }
 }
