@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 三个白点，水平居中，位于 108x108 画布中央。
+         安全区为内 72x72（即 18..90），三点中心 x = 38 / 54 / 70，半径 7，
+         均落在安全区内，确保系统遮罩为圆形或圆角矩形时都不会被裁切。-->
+    <group android:translateY="0">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M 31 54 m -7 0 a 7 7 0 1 0 14 0 a 7 7 0 1 0 -14 0 Z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M 54 54 m -7 0 a 7 7 0 1 0 14 0 a 7 7 0 1 0 -14 0 Z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M 77 54 m -7 0 a 7 7 0 1 0 14 0 a 7 7 0 1 0 -14 0 Z" />
+    </group>
+</vector>
