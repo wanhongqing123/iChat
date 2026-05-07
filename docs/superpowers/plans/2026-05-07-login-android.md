@@ -6,7 +6,7 @@
 
 **Architecture:** 单 Module Android Studio 工程，Jetpack Compose 声明式 UI，单 Activity + Compose Navigation 承载两屏。状态机 `LoginViewModel` 持有 `MockAuthRepository`，60s 倒计时用 `viewModelScope` 协程。无 DI 框架（YAGNI）。
 
-**Tech Stack:** Kotlin 2.0+ · AGP 8.7+ · Gradle 8.7+ · minSdk 26 / targetSdk 34 · Jetpack Compose BOM 2024.12+ · navigation-compose · kotlinx-coroutines · JUnit 4 · Compose UI Test
+**Tech Stack:** Kotlin 2.0+ · AGP 8.7+ · **Gradle 8.9+**（AGP 8.7 最低要求）· minSdk 26 / targetSdk 34 · Jetpack Compose BOM 2024.12+ · navigation-compose · kotlinx-coroutines · JUnit 4 · Compose UI Test
 
 **Spec:** `docs/superpowers/specs/2026-05-07-login-screen-design.md`
 
@@ -249,8 +249,10 @@ class MainActivity : ComponentActivity() {
 
 Run（在 `UI/Android/` 下）：
 ```bash
-gradle wrapper --gradle-version 8.7
+gradle wrapper --gradle-version 8.9
 ```
+
+注：AGP 8.7 要求 Gradle 最低 8.9。`gradle-8.7` 会在构建时报 "Minimum supported Gradle version is 8.9"。
 
 Expected：生成 `gradle/wrapper/gradle-wrapper.jar`、`gradle-wrapper.properties`、`gradlew`、`gradlew.bat`。
 
