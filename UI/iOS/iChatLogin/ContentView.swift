@@ -1,10 +1,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var store = LoginStore()
+
     var body: some View {
-        ZStack {
-            Color.bgPage.ignoresSafeArea()
-            Text("iChat").font(.titleLg).foregroundStyle(Color.textPrimary)
+        if store.didLoginSuccess {
+            HomePlaceholderView()
+        } else {
+            NavigationStack {
+                PhoneView(store: store)
+                    .navigationDestination(isPresented: Binding(
+                        get: { store.phase == .code },
+                        set: { isPresented in if !isPresented { store.goBack() } }
+                    )) {
+                        CodeView(store: store).navigationBarBackButtonHidden(true)
+                    }
+            }
         }
     }
 }
