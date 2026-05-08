@@ -2,7 +2,9 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello iChat")
-            .padding()
+        ZStack {
+            Color.bgPage.ignoresSafeArea()
+            Text("iChat").font(.titleLg).foregroundStyle(Color.textPrimary)
+        }
     }
 }
