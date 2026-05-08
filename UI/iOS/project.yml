@@ -34,6 +34,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ichat.iChatLoginTests
+        GENERATE_INFOPLIST_FILE: "YES"
   iChatLoginUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -44,6 +45,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ichat.iChatLoginUITests
+        GENERATE_INFOPLIST_FILE: "YES"
 schemes:
   iChatLogin:
     build:
