@@ -10,3 +10,9 @@
 **/.idea/
 *.iml
 **/captures/
+
+# iOS / xcodegen-generated
+UI/iOS/iChatLogin.xcodeproj/
+UI/iOS/*.xcworkspace/
+UI/iOS/.build/
+UI/iOS/DerivedData/

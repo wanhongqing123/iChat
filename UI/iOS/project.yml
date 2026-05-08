@@ -1,0 +1,57 @@
+name: iChatLogin
+options:
+  bundleIdPrefix: com.ichat
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: zh-Hans
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGNING_REQUIRED: "NO"
+    CODE_SIGN_IDENTITY: ""
+targets:
+  iChatLogin:
+    type: application
+    platform: iOS
+    sources:
+      - iChatLogin
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ichat.iChatLogin
+        INFOPLIST_FILE: iChatLogin/Info.plist
+        ENABLE_PREVIEWS: "YES"
+        TARGETED_DEVICE_FAMILY: "1"
+  iChatLoginTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - iChatLoginTests
+    dependencies:
+      - target: iChatLogin
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ichat.iChatLoginTests
+  iChatLoginUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - iChatLoginUITests
+    dependencies:
+      - target: iChatLogin
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ichat.iChatLoginUITests
+schemes:
+  iChatLogin:
+    build:
+      targets:
+        iChatLogin: all
+        iChatLoginTests: [test]
+        iChatLoginUITests: [test]
+    test:
+      targets:
+        - iChatLoginTests
+        - iChatLoginUITests
