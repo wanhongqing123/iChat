@@ -4,17 +4,21 @@ import XCTest
 @MainActor
 final class LoginStoreTests: XCTestCase {
 
-    final class StubService: MockAuthService {
+    struct StubService: AuthService {
         var requestImpl: (String) async -> AuthResult = { _ in .requestSuccess }
         var verifyImpl:  (String, String) async -> AuthResult = { _, c in
             c == "123456" ? .verifySuccess(token: "t", isNewUser: false) : .invalidCode
         }
-        var requestCount = 0
-        override func requestCode(phone: String) async throws -> AuthResult {
-            requestCount += 1
+        // requestCount can't be a stored mutable property on a struct used by reference.
+        // For tests that need to count calls, use a class wrapper:
+        final class Counter { var value = 0 }
+        var counter = Counter()
+
+        func requestCode(phone: String) async throws -> AuthResult {
+            counter.value += 1
             return await requestImpl(phone)
         }
-        override func verifyCode(phone: String, code: String) async throws -> AuthResult {
+        func verifyCode(phone: String, code: String) async throws -> AuthResult {
             await verifyImpl(phone, code)
         }
     }
@@ -94,15 +98,15 @@ final class LoginStoreTests: XCTestCase {
         let store = LoginStore(service: stub, countdownTickInterval: .milliseconds(10))
         store.onPhoneChange("13800138000")
         await store.requestCode()
-        XCTAssertEqual(stub.requestCount, 1)
+        XCTAssertEqual(stub.counter.value, 1)
         store.goBack()
         await store.requestCode()
         XCTAssertEqual(store.phase, .code)
-        XCTAssertEqual(stub.requestCount, 1)
+        XCTAssertEqual(stub.counter.value, 1)
     }
 
     func test_networkError_onRequestCode_keepsPhonePhase() async {
-        let stub = StubService()
+        var stub = StubService()
         stub.requestImpl = { _ in .networkError }
         let store = LoginStore(service: stub, countdownTickInterval: .milliseconds(10))
         store.onPhoneChange("13800138000")

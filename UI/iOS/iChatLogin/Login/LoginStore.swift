@@ -14,14 +14,14 @@ final class LoginStore: ObservableObject {
     @Published private(set) var errorMessage: String?
     @Published private(set) var didLoginSuccess: Bool = false
 
-    private let service: MockAuthService
+    private let service: AuthService
     private let countdownTickInterval: Duration
     private let errorClearDelay: Duration
     private var countdownTask: Task<Void, Never>?
     private var errorClearTask: Task<Void, Never>?
 
     init(
-        service: MockAuthService = MockAuthService(),
+        service: AuthService = MockAuthService(),
         countdownTickInterval: Duration = .seconds(1),
         errorClearDelay: Duration = .milliseconds(1_200)
     ) {

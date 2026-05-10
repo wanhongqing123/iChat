@@ -7,8 +7,8 @@ enum AuthResult: Equatable {
     case networkError
 }
 
-class MockAuthService {
-
+/// Mock 实现：本地模拟延迟 + 固定通过码 "123456"。仅用于第一期 demo 与测试。
+final class MockAuthService: AuthService {
     func requestCode(phone: String) async throws -> AuthResult {
         try await Task.sleep(nanoseconds: 800_000_000)
         return .requestSuccess
