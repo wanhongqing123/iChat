@@ -3,7 +3,8 @@ package com.ichat.login.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ichat.login.data.AuthResult
-import com.ichat.login.data.MockAuthRepository
+import com.ichat.login.data.AuthService
+import com.ichat.login.data.MockAuthService
 import com.ichat.login.data.PhoneUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -34,7 +35,7 @@ sealed class LoginEvent {
 }
 
 class LoginViewModel(
-    private val repo: MockAuthRepository = MockAuthRepository(),
+    private val auth: AuthService = MockAuthService(),
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
@@ -65,7 +66,7 @@ class LoginViewModel(
         }
         viewModelScope.launch {
             _state.update { it.copy(isSubmitting = true, errorMessage = null) }
-            when (repo.requestCode(_state.value.phone)) {
+            when (auth.requestCode(_state.value.phone)) {
                 is AuthResult.RequestSuccess -> {
                     _state.update { it.copy(phase = LoginPhase.Code, code = "", isSubmitting = false, countdown = 60) }
                     startCountdown()
@@ -90,7 +91,7 @@ class LoginViewModel(
     fun resendCode() {
         if (_state.value.countdown > 0) return
         viewModelScope.launch {
-            when (repo.requestCode(_state.value.phone)) {
+            when (auth.requestCode(_state.value.phone)) {
                 is AuthResult.RequestSuccess -> { _state.update { it.copy(countdown = 60) }; startCountdown() }
                 else -> _state.update { it.copy(errorMessage = "网络异常，请检查后重试") }
             }
@@ -100,7 +101,7 @@ class LoginViewModel(
     private fun verifyCode() {
         viewModelScope.launch {
             _state.update { it.copy(isSubmitting = true) }
-            val result = repo.verifyCode(_state.value.phone, _state.value.code)
+            val result = auth.verifyCode(_state.value.phone, _state.value.code)
             _state.update { it.copy(isSubmitting = false) }
             when (result) {
                 is AuthResult.VerifySuccess -> _events.emit(LoginEvent.LoginSuccess)

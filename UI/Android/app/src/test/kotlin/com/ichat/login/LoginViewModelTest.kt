@@ -1,7 +1,7 @@
 package com.ichat.login
 
 import com.ichat.login.data.AuthResult
-import com.ichat.login.data.MockAuthRepository
+import com.ichat.login.data.AuthService
 import com.ichat.login.login.LoginPhase
 import com.ichat.login.login.LoginViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,35 +26,35 @@ class LoginViewModelTest {
     @Before fun setUp()  { Dispatchers.setMain(dispatcher) }
     @After  fun tearDown(){ Dispatchers.resetMain() }
 
-    private fun stubRepo(
+    private fun stubAuth(
         request: suspend (String) -> AuthResult = { AuthResult.RequestSuccess },
         verify:  suspend (String, String) -> AuthResult =
             { _, c -> if (c == "123456") AuthResult.VerifySuccess("t", false) else AuthResult.InvalidCode },
-    ) = object : MockAuthRepository() {
+    ) = object : AuthService {
         override suspend fun requestCode(phone: String) = request(phone)
         override suspend fun verifyCode(phone: String, code: String) = verify(phone, code)
     }
 
     @Test fun phoneTooShort_buttonDisabled() = runTest {
-        val vm = LoginViewModel(stubRepo())
+        val vm = LoginViewModel(stubAuth())
         vm.onPhoneChange("1380013")
         assertEquals(false, vm.state.value.canRequestCode)
     }
 
     @Test fun phoneInvalidFormat_buttonDisabled() = runTest {
-        val vm = LoginViewModel(stubRepo())
+        val vm = LoginViewModel(stubAuth())
         vm.onPhoneChange("00000000000")
         assertEquals(false, vm.state.value.canRequestCode)
     }
 
     @Test fun phoneValid_buttonEnabled() = runTest {
-        val vm = LoginViewModel(stubRepo())
+        val vm = LoginViewModel(stubAuth())
         vm.onPhoneChange("13800138000")
         assertEquals(true, vm.state.value.canRequestCode)
     }
 
     @Test fun requestCode_movesToCodePhaseAndStartsCountdown() = runTest {
-        val vm = LoginViewModel(stubRepo())
+        val vm = LoginViewModel(stubAuth())
         vm.onPhoneChange("13800138000")
         vm.requestCode()
         runCurrent()
@@ -63,7 +63,7 @@ class LoginViewModelTest {
     }
 
     @Test fun countdown_decrementsEverySecond() = runTest {
-        val vm = LoginViewModel(stubRepo())
+        val vm = LoginViewModel(stubAuth())
         vm.onPhoneChange("13800138000"); vm.requestCode()
         runCurrent()
         assertEquals(60, vm.state.value.countdown)
@@ -72,7 +72,7 @@ class LoginViewModelTest {
     }
 
     @Test fun verifyCode_correct_emitsLoginSuccess() = runTest {
-        val vm = LoginViewModel(stubRepo())
+        val vm = LoginViewModel(stubAuth())
         vm.onPhoneChange("13800138000"); vm.requestCode(); runCurrent()
         vm.onCodeChange("123456")
         runCurrent()
@@ -80,7 +80,7 @@ class LoginViewModelTest {
     }
 
     @Test fun verifyCode_wrong_setsErrorThenClearsAfterDelay() = runTest {
-        val vm = LoginViewModel(stubRepo())
+        val vm = LoginViewModel(stubAuth())
         vm.onPhoneChange("13800138000"); vm.requestCode(); runCurrent()
         vm.onCodeChange("000000")
         runCurrent()
@@ -91,7 +91,7 @@ class LoginViewModelTest {
     }
 
     @Test fun goBack_preservesPhoneAndCountdown() = runTest {
-        val vm = LoginViewModel(stubRepo())
+        val vm = LoginViewModel(stubAuth())
         vm.onPhoneChange("13800138000"); vm.requestCode(); runCurrent()
         advanceTimeBy(5_000); runCurrent()           // countdown should be ~55
         vm.goBack()
@@ -102,7 +102,7 @@ class LoginViewModelTest {
 
     @Test fun requestCode_duringCountdown_skipsRefetchAndReentersCodeScreen() = runTest {
         var requestCount = 0
-        val vm = LoginViewModel(stubRepo(request = {
+        val vm = LoginViewModel(stubAuth(request = {
             requestCount++
             AuthResult.RequestSuccess
         }))
@@ -118,7 +118,7 @@ class LoginViewModelTest {
     }
 
     @Test fun networkError_onRequestCode_keepsPhonePhaseAndShowsError() = runTest {
-        val vm = LoginViewModel(stubRepo(request = { AuthResult.NetworkError }))
+        val vm = LoginViewModel(stubAuth(request = { AuthResult.NetworkError }))
         vm.onPhoneChange("13800138000")
         vm.requestCode(); runCurrent()
         assertEquals(LoginPhase.Phone, vm.state.value.phase)
