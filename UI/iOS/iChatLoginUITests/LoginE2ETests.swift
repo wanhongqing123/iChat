@@ -79,4 +79,54 @@ final class LoginE2ETests: XCTestCase {
         XCTAssertTrue(app.staticTexts["输入验证码"].exists,
                       "still on code screen after wrong code")
     }
+
+    func test_phoneScreen_renders_titles_and_caption() {
+        let app = XCUIApplication()
+        app.launch()
+
+        XCTAssertTrue(app.staticTexts["欢迎使用 iChat"].waitForExistence(timeout: 2.0),
+                      "title should appear")
+        XCTAssertTrue(app.staticTexts["输入手机号，开启陪伴"].exists,
+                      "subtitle should appear")
+        XCTAssertTrue(app.staticTexts["未注册手机号将自动创建账号"].exists,
+                      "caption should appear")
+        // "获取验证码" 既是 button accessibility id 也是文案
+        XCTAssertEqual(app.buttons["get-code-btn"].label, "获取验证码")
+    }
+
+    func test_phone_tooShort_keeps_button_disabled() {
+        let app = XCUIApplication()
+        app.launch()
+
+        let getCodeBtn = app.buttons["get-code-btn"]
+        XCTAssertFalse(getCodeBtn.isEnabled, "initially disabled")
+
+        let phoneField = app.textFields["phone-input"]
+        phoneField.tap()
+        // 只输 7 位：不足 11 位，应保持 disabled
+        typeDigits("1380013", in: app)
+
+        // 让状态传播
+        let stillDisabled = NSPredicate(format: "isEnabled == FALSE")
+        expectation(for: stillDisabled, evaluatedWith: getCodeBtn)
+        waitForExpectations(timeout: 2.0)
+    }
+
+    func test_codeScreen_shows_countdown_text_and_help_link() {
+        let app = XCUIApplication()
+        app.launch()
+
+        app.textFields["phone-input"].tap()
+        app.textFields["phone-input"].typeText("13800138000")
+        app.buttons["get-code-btn"].tap()
+
+        XCTAssertTrue(app.staticTexts["输入验证码"].waitForExistence(timeout: 2.0))
+
+        // 倒计时文案：以 "s 后重新发送" 结尾的某个 staticText 存在
+        let countdownText = app.staticTexts.matching(NSPredicate(format: "label ENDSWITH %@", "s 后重新发送"))
+        XCTAssertGreaterThan(countdownText.count, 0, "countdown text should appear")
+
+        // 帮助链接
+        XCTAssertTrue(app.staticTexts["收不到验证码？"].exists)
+    }
 }
