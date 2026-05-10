@@ -121,6 +121,11 @@ class LoginViewModel(
         }
     }
 
+    @androidx.annotation.VisibleForTesting
+    internal fun setStateForTest(state: LoginUiState) {
+        _state.value = state
+    }
+
     fun goBack() {
         _state.update { it.copy(phase = LoginPhase.Phone, errorMessage = null) }
     }
