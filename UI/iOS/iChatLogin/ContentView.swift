@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var store = LoginStore()
+    @ObservedObject var store: LoginStore
 
     var body: some View {
         if store.didLoginSuccess {
