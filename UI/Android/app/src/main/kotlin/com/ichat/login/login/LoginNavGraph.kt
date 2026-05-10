@@ -4,11 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ichat.login.IChatApplication
 import com.ichat.login.home.HomePlaceholderScreen
 import kotlinx.coroutines.flow.collectLatest
 
@@ -22,7 +24,9 @@ object Routes {
 fun LoginNavGraph(
     navController: NavHostController = rememberNavController(),
 ) {
-    val vm: LoginViewModel = viewModel()
+    val context = LocalContext.current
+    val app = context.applicationContext as IChatApplication
+    val vm: LoginViewModel = viewModel(factory = LoginViewModelFactory(app.authService))
     val state by vm.state.collectAsState()
 
     LaunchedEffect(Unit) {
